@@ -16,18 +16,18 @@ startServer();
 
 setTimeout(() => {
   data = {
-    lat: 42.123,
-    lon: 7.123,
+    lat: 47.5502281,
+    lon: 7.5641242,
     speed: 123.123,
     alt: 321.321,
-    head: 333.333
+    head: 180.0
   }
 }, 10000);
 
 function startServer() {
   server.get('/data', (req, res) => {
     res.send(data ? data : {"error": "no-data"});
-    console.info(`Sent ${data}`);
+    console.info('Sent data', data);
   });
   server.listen(port, () => console.info(`Server listening at http://localhost:${port}`));
 }
