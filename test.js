@@ -5,7 +5,13 @@ const path = require('path');
 const server = express();
 const port = 12345;
 
-let data = null;
+const data = {
+  lat: 42.532219,
+  lon: 9.7364273,
+  speed: 123.123,
+  alt: 321.321,
+  head: 45.0
+};
 let ipAddress = "";
 
 console.info('App init');
@@ -14,15 +20,10 @@ ipAddress = internalIp.v4.sync();
 
 startServer();
 
-setTimeout(() => {
-  data = {
-    lat: 47.5502281,
-    lon: 7.5641242,
-    speed: 123.123,
-    alt: 321.321,
-    head: 180.0
-  }
-}, 10000);
+setInterval(() => {
+  data.lat = data.lat + 0.01;
+  data.lon = data.lon + 0.01;
+}, 1000);
 
 function startServer() {
   server.get('/data', (req, res) => {
