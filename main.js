@@ -1,7 +1,9 @@
-const { app, BrowserWindow, Menu, Tray, shell } = require('electron');
+const { app, BrowserWindow, Menu, Tray, shell, dialog } = require('electron');
 const simConnect = require('node-simconnect');
 const express = require('express');
 const internalIp = require('internal-ip');
+const compareVersions = require('compare-versions');
+const fetch = require('electron-fetch').default;
 const unhandled = require('electron-unhandled');
 const log = require('electron-log');
 const path = require('path');
@@ -22,6 +24,22 @@ const setConnected = flag => {
 
 log.info('App init');
 
+fetch('https://fsmaptool.riccardolardi.com/version.json')
+  .then(res => res.json())
+  .then(json => {
+    const latestVersion = json.version;
+    if (compareVersions(latestVersion, version) === 1) {
+      const options  = {
+        type: "info",
+        title: "New FS Map Tool Server version available",
+        buttons: ["Yes", "No"],
+        message: `New server version ${latestVersion} is available. Go to download website now?`
+      };
+      if (dialog.showMessageBoxSync(null, options) === 0) openWebsite();
+    }
+  })
+  .catch(error => console.error(error));
+
 app.whenReady().then(() => {
   log.info('App ready');
   ipAddress = internalIp.v4.sync();
@@ -29,7 +47,7 @@ app.whenReady().then(() => {
   const contextMenu = Menu.buildFromTemplate([
     { label: `FS Map Tool v${version}`, type: 'normal', enabled: false },
     { label: `IP: ${ipAddress}`, type: 'normal', enabled: false },
-    { label: 'Website', type: 'normal', click: () => shell.openExternal('http://www.fsmaptool.com') },
+    { label: 'Website', type: 'normal', click: () => openWebsite() },
     { label: '', type: 'separator' },
     { label: 'Quit', type: 'normal', click: () => quitApp(), role: 'quit' }
   ]);
@@ -42,6 +60,10 @@ app.whenReady().then(() => {
 });
 
 app.on('window-all-closed', () => quitApp());
+
+function openWebsite() {
+  shell.openExternal('https://www.fsmaptool.com');
+}
 
 function quitApp() {
   tray.destroy();
@@ -84,14 +106,16 @@ function startPolling() {
   simConnect.requestDataOnSimObject([
     ["Plane Latitude", "degrees"], 
     ["Plane Longitude", "degrees"], 
-    ["PLANE ALTITUDE", "feet"],
-    ["PLANE HEADING DEGREES TRUE", "degrees"]
+    ["INDICATED ALTITUDE", "feet"],
+    ["PLANE HEADING DEGREES TRUE", "degrees"],
+    ["AIRSPEED INDICATED", "knots"]
   ], (response) => {
     data = {
       lat: response["Plane Latitude"],
       lon: response["Plane Longitude"],
-      alt: response["PLANE ALTITUDE"],
-      head: response["PLANE HEADING DEGREES TRUE"]
+      alt: response["INDICATED ALTITUDE"],
+      head: response["PLANE HEADING DEGREES TRUE"],
+      speed: response["AIRSPEED INDICATED"]
     };
     // log.log(data);
   }, 0, 4, 1);

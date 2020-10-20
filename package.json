@@ -1,6 +1,6 @@
 {
   "name": "fsmaptool",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "author": {
     "name": "Riccardo Lardi",
     "email": "hello@riccardolardi.com"
@@ -9,6 +9,8 @@
   "homepage": "www.fsmaptool.com",
   "main": "main.js",
   "dependencies": {
+    "compare-versions": "^3.6.0",
+    "electron-fetch": "^1.7.1",
     "electron-log": "^4.2.4",
     "electron-unhandled": "^3.0.2",
     "express": "^4.17.1",
@@ -18,8 +20,7 @@
   "devDependencies": {
     "electron": "^10.1.4",
     "electron-builder": "^22.9.1",
-    "electron-packager": "^15.1.0",
-    "electron-rebuild": "^2.2.0"
+    "electron-packager": "^15.1.0"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
