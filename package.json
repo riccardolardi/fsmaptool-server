@@ -1,11 +1,11 @@
 {
   "name": "fsmaptool",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "author": {
     "name": "Riccardo Lardi",
     "email": "hello@riccardolardi.com"
   },
-  "description": "FS Map Tool",
+  "description": "FS Map Tool Server",
   "homepage": "www.fsmaptool.com",
   "main": "main.js",
   "dependencies": {
@@ -24,14 +24,14 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "electron": "electron .",
-    "electron-rebuild": "node-gyp rebuild --target=10.1.3 --arch=x64 --dist-url=https://electronjs.org/headers",
+    "electron-rebuild": "node-gyp rebuild --target=10.1.4 --arch=x64 --dist-url=https://electronjs.org/headers",
     "build": "electron-builder -w",
     "postinstall": "electron-builder install-app-deps"
   },
   "license": "ISC",
   "build": {
     "appId": "com.riccardolardi.fsmaptool",
-    "productName": "FS Map Tool",
+    "productName": "FS Map Tool Server",
     "copyright": "Riccardo Lardi",
     "win": {
       "target": [
