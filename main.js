@@ -41,7 +41,7 @@ fetch('https://fsmaptool.riccardolardi.com/version.json')
   .catch(error => console.error(error));
 
 app.whenReady().then(() => {
-  log.info('App ready');
+  log.info(`App ready, running v${version}`);
   ipAddress = internalIp.v4.sync();
   tray = new Tray(path.join(__dirname, 'icon.png'));
   const contextMenu = Menu.buildFromTemplate([
@@ -72,7 +72,7 @@ function quitApp() {
 }
 
 function startServer() {
-  server.get('/data', (req, res) => res.send(data ? data : {"error": "no-data"}));
+  server.get('/data', (req, res) => data && res.send(data));
   server.listen(port, () => log.info(`Server listening at http://localhost:${port}`));
 }
 
@@ -108,15 +108,22 @@ function startPolling() {
     ["Plane Longitude", "degrees"], 
     ["INDICATED ALTITUDE", "feet"],
     ["PLANE HEADING DEGREES TRUE", "degrees"],
-    ["AIRSPEED INDICATED", "knots"]
+    ["AIRSPEED INDICATED", "knots"],
+    ["GPS FLIGHT PLAN WP COUNT", "number"],
+    ["GPS FLIGHT PLAN WP INDEX", "number"],
+    ["GPS WP NEXT LAT", "degrees"],
+    ["GPS WP NEXT LON", "degrees"]
   ], (response) => {
     data = {
       lat: response["Plane Latitude"],
       lon: response["Plane Longitude"],
       alt: response["INDICATED ALTITUDE"],
       head: response["PLANE HEADING DEGREES TRUE"],
-      speed: response["AIRSPEED INDICATED"]
+      speed: response["AIRSPEED INDICATED"],
+      wpCount: response["GPS FLIGHT PLAN WP COUNT"],
+      wpNextLat: response["GPS WP NEXT LAT"],
+      wpNextLon: response["GPS WP NEXT LON"]
     };
-    // log.log(data);
+    log.log(data);
   }, 0, 4, 1);
 }
