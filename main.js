@@ -112,7 +112,10 @@ function startPolling() {
     ["GPS FLIGHT PLAN WP COUNT", "number"],
     ["GPS FLIGHT PLAN WP INDEX", "number"],
     ["GPS WP NEXT LAT", "degrees"],
-    ["GPS WP NEXT LON", "degrees"]
+    ["GPS WP NEXT LON", "degrees"],
+    ["GPS WP DISTANCE", "meters"],
+    ["GPS WP TRUE REQ HDG", "radians"]
+
   ], (response) => {
     data = {
       lat: response["Plane Latitude"],
@@ -122,7 +125,9 @@ function startPolling() {
       speed: response["AIRSPEED INDICATED"],
       wpCount: response["GPS FLIGHT PLAN WP COUNT"],
       wpNextLat: response["GPS WP NEXT LAT"],
-      wpNextLon: response["GPS WP NEXT LON"]
+      wpNextLon: response["GPS WP NEXT LON"],
+      wpDistance: response["GPS WP DISTANCE"],
+      wpHead: response["GPS WP TRUE REQ HDG"]
     };
     log.log(data);
   }, 0, 4, 1);
