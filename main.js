@@ -19,16 +19,6 @@ let ipAddress = "";
 const version = app.getVersion();
 const lock = app.requestSingleInstanceLock();
 
-if (!lock) {
-  const options  = {
-    type: "error",
-    title: "Server already running",
-    buttons: ["Ok"],
-    message: "Another instance of the server application is running already. Exiting this one."
-  };
-  if (dialog.showMessageBoxSync(null, options) === 0) quitApp();
-}
-
 const setConnected = flag => {
   if (tray) tray.setImage(path.join(__dirname, flag ? 'icon2.png' : 'icon.png'));
 }
@@ -53,6 +43,10 @@ fetch('https://fsmaptool.riccardolardi.com/version.json')
 
 app.whenReady().then(() => {
   log.info(`App ready, running v${version}`);
+  if (!checkLock(lock)) {
+    quitApp();
+    return false;
+  }
   ipAddress = internalIp.v4.sync();
   tray = new Tray(path.join(__dirname, 'icon.png'));
   const contextMenu = Menu.buildFromTemplate([
@@ -77,9 +71,24 @@ function openWebsite() {
 }
 
 function quitApp() {
-  tray.destroy();
+  if (tray) tray.destroy();
   tray = null;
   app.quit();
+}
+
+function checkLock(lock) {
+  if (!lock) {
+    const options  = {
+      type: "error",
+      title: "FS Map Tool server already running",
+      buttons: ["Ok"],
+      message: "Another instance of the server application is running already. Exiting this one."
+    };
+    dialog.showMessageBoxSync(null, options);
+    return false;
+  } else {
+    return true;
+  }
 }
 
 function startServer() {
