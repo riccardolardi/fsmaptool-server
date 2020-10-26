@@ -1,3 +1,4 @@
+const simConnect = require('node-simconnect');
 const express = require('express');
 const internalIp = require('internal-ip');
 const path = require('path');
