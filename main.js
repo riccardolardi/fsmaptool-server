@@ -15,6 +15,11 @@ let data = null;
 let tray = null;
 let ipAddress = "";
 const version = app.getVersion();
+const lock = app.requestSingleInstanceLock();
+
+if (!lock) {
+  quitApp();
+}
 
 const setConnected = flag => {
   if (tray) tray.setImage(path.join(__dirname, flag ? 'icon2.png' : 'icon.png'));
