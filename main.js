@@ -20,7 +20,13 @@ const version = app.getVersion();
 const lock = app.requestSingleInstanceLock();
 
 if (!lock) {
-  quitApp();
+  const options  = {
+    type: "error",
+    title: "Server already running",
+    buttons: ["Ok"],
+    message: "Another instance of the server application is running already. Exiting this one."
+  };
+  if (dialog.showMessageBoxSync(null, options) === 0) quitApp();
 }
 
 const setConnected = flag => {
