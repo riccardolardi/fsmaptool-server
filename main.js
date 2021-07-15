@@ -2,6 +2,7 @@ const { app, BrowserWindow, Menu, Tray, shell, dialog } = require('electron');
 const simConnect = require('node-simconnect');
 const express = require('express');
 const internalIp = require('internal-ip');
+const bodyParser = require('body-parser');
 const compareVersions = require('compare-versions');
 const fetch = require('electron-fetch').default;
 const unhandled = require('electron-unhandled');
@@ -16,10 +17,15 @@ unhandled();
 let data = null;
 let tray = null;
 let ipAddress = "";
+let isConnected = false;
 const version = app.getVersion();
 const lock = app.requestSingleInstanceLock();
 
+server.use(bodyParser.urlencoded({ extended: false }));
+server.use(bodyParser.json());
+
 const setConnected = flag => {
+  isConnected = flag;
   if (tray) tray.setImage(path.join(__dirname, flag ? 'icon2.png' : 'icon.png'));
 }
 
@@ -92,6 +98,11 @@ function checkLock(lock) {
 }
 
 function startServer() {
+  server.post('/teleport', (req, res) => {
+    const { latitude, longitude } = req.body;
+    teleport(latitude, longitude);
+    res.sendStatus(200);
+  });
   server.get('/data', (req, res) => data && res.send(data));
   server.listen(port, () => log.info(`Server listening at http://localhost:${port}`));
 }
@@ -151,4 +162,11 @@ function startPolling() {
     };
     log.log(data);
   }, 0, 4, 1);
+}
+
+function teleport(latitude, longitude) {
+  if (!isConnected) return false;
+  log.info(`Teleporting to lat:${latitude} lon:${longitude}`);
+  simConnect.setDataOnSimObject("Plane Latitude", "degrees", latitude);
+  simConnect.setDataOnSimObject("Plane Longitude", "degrees", longitude);
 }
